@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>
+  Atomcamを活用する · JL1ANZ&#39;s page
+</title>
+  <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light dark">
+
+
+
+
+<meta name="author" content="JL1ANZ / Mitsuki Baba">
+<meta name="description" content="
+
+  atomcamとは
+  
+    
+    Link to heading
+  
+
+一般的な使い方としては，ネットワークカメラとして，防犯カメラやペットの監視などの用途が想定されているようである．
+公式ストア（AtomCam2）
+しかし，天文界隈(?)ではこのカメラの「お手頃さ」と「赤外カメラ」に着目して流星観測用カメラとして使う取り組みがある．私も流星観測を目的として設置することとした．(2023.01)
+このカメラはWi-Fiに接続し，スマホ上のアプリから録画データを見ることができるが，少し放置するだけでSDカードがいっぱいになってしまったり，録画データの取り込みや整理が面倒だったり，不便な点がいくつかある．
+そこで，bakueikozo氏が制作し，mnakada氏が改良したatomcam_toolsというツールを使わせていただくことにした．
+録画したデータは最終的にサーバーに保存すること，流星検知も行うことを目標とする．
+
+
+  導入
+  
+    
+    Link to heading
+  
+
+atomcam_tools上の，atomcam_tools.zipをダウンロードし，解凍したあと，atomcamに刺すmicroSDカードのrootフォルダに保存する．
+atomcamを電源につなぐと起動する．スマホのatomcam純正アプリで設定が済んでいれば設定画面からIPアドレスが見れるはずなので，http://[IPアドレス]にアクセスすると管理画面にアクセスできる．
+IPが変わると面倒なので，固定しておくとよい．
+
+  管理画面で設定する重要な点
+  
+    
+    Link to heading
+  
+
+
+カメラ設定
+
+ナイトビジョン（オンにすると赤外モードになる）
+赤外線ライト（レンズカバーに反射して邪魔なのでオフにする）
+
+
+録画設定
+
+SDカードのファイル自動削除（オンにして定期的に消す）
+録画スケジュール
+
+
+
+
+  録画データをサーバーに保存する
+  
+    
+    Link to heading
+  
+
+録画データは，http://[IPアドレス]/sdcard/record/YYYYMMDD/hh/mm.mp4から取得することができる．
+したがって，サーバー側で以下のようなpythonスクリプトを1分毎に実行すればよい．（私は18時から翌朝6時頃のデータが欲しいのでこのようにしている．cronで管理しろと言えばそれまでだがタイムゾーン計算がめんどい．）
+from datetime import datetime, timedelta
+from pytz import timezone
+import requests
+import os
+
+baseURL = &#34;http://[IP-address]/sdcard/record/&#34;
+
+now = datetime.now(timezone(&#34;Asia/Tokyo&#34;))
+target = now &#43; timedelta(minutes=-2)
+date_str = str(target)[:-13]
+
+YMD = date_str[0:-15] &#43; date_str[5:-12] &#43; date_str[8:-9]
+hh = date_str[11:-6]
+h_num = int(hh)
+mm = date_str[14:-3]
+
+dirname = &#34;/mnt/nas/atomcam/&#34; &#43; YMD &#43; &#34;/&#34;
+filename = YMD &#43; &#34;_&#34; &#43; hh &#43; mm &#43; &#34;.mp4&#34;
+
+if (os.path.isdir(dirname) == 0):
+    os.mkdir(dirname)
+
+URL = baseURL &#43; YMD &#43; &#34;/&#34; &#43; hh &#43; &#34;/&#34; &#43; mm &#43; &#34;.mp4&#34;
+print(URL)
+
+if ((h_num &lt; 6) or (h_num &gt; 17)):
+    try:
+        response = requests.get(URL)
+        with open(dirname &#43; filename, &#34;wb&#34;) as f:
+            f.write(response.content)
+    except:
+        pass
+">
+<meta name="keywords" content="">
+
+
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Atomcamを活用する">
+  <meta name="twitter:description" content="atomcamとは Link to heading 一般的な使い方としては，ネットワークカメラとして，防犯カメラやペットの監視などの用途が想定されているようである．
+公式ストア（AtomCam2）
+しかし，天文界隈(?)ではこのカメラの「お手頃さ」と「赤外カメラ」に着目して流星観測用カメラとして使う取り組みがある．私も流星観測を目的として設置することとした．(2023.01)
+このカメラはWi-Fiに接続し，スマホ上のアプリから録画データを見ることができるが，少し放置するだけでSDカードがいっぱいになってしまったり，録画データの取り込みや整理が面倒だったり，不便な点がいくつかある．
+そこで，bakueikozo氏が制作し，mnakada氏が改良したatomcam_toolsというツールを使わせていただくことにした．
+録画したデータは最終的にサーバーに保存すること，流星検知も行うことを目標とする．
+導入 Link to heading atomcam_tools上の，atomcam_tools.zipをダウンロードし，解凍したあと，atomcamに刺すmicroSDカードのrootフォルダに保存する．
+atomcamを電源につなぐと起動する．スマホのatomcam純正アプリで設定が済んでいれば設定画面からIPアドレスが見れるはずなので，http://[IPアドレス]にアクセスすると管理画面にアクセスできる．
+IPが変わると面倒なので，固定しておくとよい．
+管理画面で設定する重要な点 Link to heading カメラ設定 ナイトビジョン（オンにすると赤外モードになる） 赤外線ライト（レンズカバーに反射して邪魔なのでオフにする） 録画設定 SDカードのファイル自動削除（オンにして定期的に消す） 録画スケジュール 録画データをサーバーに保存する Link to heading 録画データは，http://[IPアドレス]/sdcard/record/YYYYMMDD/hh/mm.mp4から取得することができる． したがって，サーバー側で以下のようなpythonスクリプトを1分毎に実行すればよい．（私は18時から翌朝6時頃のデータが欲しいのでこのようにしている．cronで管理しろと言えばそれまでだがタイムゾーン計算がめんどい．）
+from datetime import datetime, timedelta from pytz import timezone import requests import os baseURL = &#34;http://[IP-address]/sdcard/record/&#34; now = datetime.now(timezone(&#34;Asia/Tokyo&#34;)) target = now &#43; timedelta(minutes=-2) date_str = str(target)[:-13] YMD = date_str[0:-15] &#43; date_str[5:-12] &#43; date_str[8:-9] hh = date_str[11:-6] h_num = int(hh) mm = date_str[14:-3] dirname = &#34;/mnt/nas/atomcam/&#34; &#43; YMD &#43; &#34;/&#34; filename = YMD &#43; &#34;_&#34; &#43; hh &#43; mm &#43; &#34;.mp4&#34; if (os.path.isdir(dirname) == 0): os.mkdir(dirname) URL = baseURL &#43; YMD &#43; &#34;/&#34; &#43; hh &#43; &#34;/&#34; &#43; mm &#43; &#34;.mp4&#34; print(URL) if ((h_num &lt; 6) or (h_num &gt; 17)): try: response = requests.get(URL) with open(dirname &#43; filename, &#34;wb&#34;) as f: f.write(response.content) except: pass">
+
+<meta property="og:url" content="https://grapetamc.github.io/portfolio/blog/atomcam/">
+  <meta property="og:site_name" content="JL1ANZ&#39;s page">
+  <meta property="og:title" content="Atomcamを活用する">
+  <meta property="og:description" content="atomcamとは Link to heading 一般的な使い方としては，ネットワークカメラとして，防犯カメラやペットの監視などの用途が想定されているようである．
+公式ストア（AtomCam2）
+しかし，天文界隈(?)ではこのカメラの「お手頃さ」と「赤外カメラ」に着目して流星観測用カメラとして使う取り組みがある．私も流星観測を目的として設置することとした．(2023.01)
+このカメラはWi-Fiに接続し，スマホ上のアプリから録画データを見ることができるが，少し放置するだけでSDカードがいっぱいになってしまったり，録画データの取り込みや整理が面倒だったり，不便な点がいくつかある．
+そこで，bakueikozo氏が制作し，mnakada氏が改良したatomcam_toolsというツールを使わせていただくことにした．
+録画したデータは最終的にサーバーに保存すること，流星検知も行うことを目標とする．
+導入 Link to heading atomcam_tools上の，atomcam_tools.zipをダウンロードし，解凍したあと，atomcamに刺すmicroSDカードのrootフォルダに保存する．
+atomcamを電源につなぐと起動する．スマホのatomcam純正アプリで設定が済んでいれば設定画面からIPアドレスが見れるはずなので，http://[IPアドレス]にアクセスすると管理画面にアクセスできる．
+IPが変わると面倒なので，固定しておくとよい．
+管理画面で設定する重要な点 Link to heading カメラ設定 ナイトビジョン（オンにすると赤外モードになる） 赤外線ライト（レンズカバーに反射して邪魔なのでオフにする） 録画設定 SDカードのファイル自動削除（オンにして定期的に消す） 録画スケジュール 録画データをサーバーに保存する Link to heading 録画データは，http://[IPアドレス]/sdcard/record/YYYYMMDD/hh/mm.mp4から取得することができる． したがって，サーバー側で以下のようなpythonスクリプトを1分毎に実行すればよい．（私は18時から翌朝6時頃のデータが欲しいのでこのようにしている．cronで管理しろと言えばそれまでだがタイムゾーン計算がめんどい．）
+from datetime import datetime, timedelta from pytz import timezone import requests import os baseURL = &#34;http://[IP-address]/sdcard/record/&#34; now = datetime.now(timezone(&#34;Asia/Tokyo&#34;)) target = now &#43; timedelta(minutes=-2) date_str = str(target)[:-13] YMD = date_str[0:-15] &#43; date_str[5:-12] &#43; date_str[8:-9] hh = date_str[11:-6] h_num = int(hh) mm = date_str[14:-3] dirname = &#34;/mnt/nas/atomcam/&#34; &#43; YMD &#43; &#34;/&#34; filename = YMD &#43; &#34;_&#34; &#43; hh &#43; mm &#43; &#34;.mp4&#34; if (os.path.isdir(dirname) == 0): os.mkdir(dirname) URL = baseURL &#43; YMD &#43; &#34;/&#34; &#43; hh &#43; &#34;/&#34; &#43; mm &#43; &#34;.mp4&#34; print(URL) if ((h_num &lt; 6) or (h_num &gt; 17)): try: response = requests.get(URL) with open(dirname &#43; filename, &#34;wb&#34;) as f: f.write(response.content) except: pass">
+  <meta property="og:locale" content="ja_jp">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="blog">
+    <meta property="article:published_time" content="2025-07-20T05:03:31+00:00">
+    <meta property="article:modified_time" content="2025-07-20T05:03:31+00:00">
+
+
+
+
+<link rel="canonical" href="https://grapetamc.github.io/portfolio/blog/atomcam/">
+
+
+<link rel="preload" href="/fonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/fa-regular-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin>
+
+
+  
+  
+  <link rel="stylesheet" href="/portfolio/css/coder.min.6445a802b9389c9660e1b07b724dcf5718b1065ed2d71b4eeaf981cc7cc5fc46.css" integrity="sha256-ZEWoArk4nJZg4bB7ck3PVxixBl7S1xtO6vmBzHzF/EY=" crossorigin="anonymous" media="screen" />
+
+
+
+
+
+
+  
+    
+    
+    <link rel="stylesheet" href="/portfolio/css/coder-dark.min.a00e6364bacbc8266ad1cc81230774a1397198f8cfb7bcba29b7d6fcb54ce57f.css" integrity="sha256-oA5jZLrLyCZq0cyBIwd0oTlxmPjPt7y6KbfW/LVM5X8=" crossorigin="anonymous" media="screen" />
+  
+
+
+
+ 
+
+
+
+
+<link rel="icon" type="image/svg+xml" href="/images/favicon.svg" sizes="any">
+<link rel="icon" type="image/png" href="/portfolio/images/favicon-180.jpg" sizes="32x32">
+<link rel="icon" type="image/png" href="/portfolio/images/favicon-180.jpg" sizes="16x16">
+
+<link rel="apple-touch-icon" href="/images/apple-touch-icon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+
+<link rel="manifest" href="/site.webmanifest">
+<link rel="mask-icon" href="/images/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+
+
+</head>
+
+
+
+
+
+
+<body class="preload-transitions colorscheme-auto">
+  
+<div class="float-container">
+    <a id="dark-mode-toggle" class="colorscheme-toggle">
+        <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+    </a>
+</div>
+
+
+  <main class="wrapper">
+    <nav class="navigation">
+  <section class="container">
+    
+    <a class="navigation-title" href="https://grapetamc.github.io/portfolio/">
+      JL1ANZ&#39;s page
+    </a>
+    
+    
+      <input type="checkbox" id="menu-toggle" />
+      <label class="menu-button float-right" for="menu-toggle">
+        <i class="fa-solid fa-bars fa-fw" aria-hidden="true"></i>
+      </label>
+      <ul class="navigation-list">
+        
+          
+            <li class="navigation-item">
+              <a class="navigation-link " href="/portfolio/about/">About</a>
+            </li>
+          
+            <li class="navigation-item">
+              <a class="navigation-link " href="/portfolio/works/">Works</a>
+            </li>
+          
+            <li class="navigation-item">
+              <a class="navigation-link " href="/portfolio/presentations/">Presentations</a>
+            </li>
+          
+            <li class="navigation-item">
+              <a class="navigation-link " href="/portfolio/products/">Products</a>
+            </li>
+          
+            <li class="navigation-item">
+              <a class="navigation-link " href="/portfolio/blog/">Blog</a>
+            </li>
+          
+            <li class="navigation-item">
+              <a class="navigation-link " href="/portfolio/misc">Misc</a>
+            </li>
+          
+        
+        
+      </ul>
+    
+  </section>
+</nav>
+
+
+    <div class="content">
+      
+  <section class="container page">
+  <article>
+    <header>
+      <h1 class="title">
+        <a class="title-link" href="https://grapetamc.github.io/portfolio/blog/atomcam/">
+          Atomcamを活用する
+        </a>
+      </h1>
+    </header>
+
+    <hr>
+<h2 id="atomcamとは">
+  atomcamとは
+  <a class="heading-link" href="#atomcam%e3%81%a8%e3%81%af">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>一般的な使い方としては，ネットワークカメラとして，防犯カメラやペットの監視などの用途が想定されているようである．<br>
+<a href="https://www.atomtech.co.jp/products/atomcam2"  class="external-link" target="_blank" rel="noopener">公式ストア（AtomCam2）</a></p>
+<p>しかし，天文界隈(?)ではこのカメラの「お手頃さ」と「赤外カメラ」に着目して流星観測用カメラとして使う取り組みがある．私も流星観測を目的として設置することとした．(2023.01)</p>
+<p>このカメラはWi-Fiに接続し，スマホ上のアプリから録画データを見ることができるが，少し放置するだけでSDカードがいっぱいになってしまったり，録画データの取り込みや整理が面倒だったり，不便な点がいくつかある．</p>
+<p>そこで，bakueikozo氏が制作し，mnakada氏が改良した<a href="https://github.com/mnakada/atomcam_tools"  class="external-link" target="_blank" rel="noopener">atomcam_tools</a>というツールを使わせていただくことにした．</p>
+<p>録画したデータは最終的にサーバーに保存すること，流星検知も行うことを目標とする．</p>
+<hr>
+<h2 id="導入">
+  導入
+  <a class="heading-link" href="#%e5%b0%8e%e5%85%a5">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p><a href="https://github.com/mnakada/atomcam_tools"  class="external-link" target="_blank" rel="noopener">atomcam_tools</a>上の，atomcam_tools.zipをダウンロードし，解凍したあと，atomcamに刺すmicroSDカードのrootフォルダに保存する．</p>
+<p>atomcamを電源につなぐと起動する．スマホのatomcam純正アプリで設定が済んでいれば設定画面からIPアドレスが見れるはずなので，<code>http://[IPアドレス]</code>にアクセスすると管理画面にアクセスできる．</p>
+<p>IPが変わると面倒なので，固定しておくとよい．</p>
+<h3 id="管理画面で設定する重要な点">
+  管理画面で設定する重要な点
+  <a class="heading-link" href="#%e7%ae%a1%e7%90%86%e7%94%bb%e9%9d%a2%e3%81%a7%e8%a8%ad%e5%ae%9a%e3%81%99%e3%82%8b%e9%87%8d%e8%a6%81%e3%81%aa%e7%82%b9">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<ul>
+<li>カメラ設定
+<ul>
+<li>ナイトビジョン（<b>オン</b>にすると赤外モードになる）</li>
+<li>赤外線ライト（レンズカバーに反射して邪魔なので<b>オフ</b>にする）</li>
+</ul>
+</li>
+<li>録画設定
+<ul>
+<li>SDカードのファイル自動削除（<b>オン</b>にして定期的に消す）</li>
+<li>録画スケジュール</li>
+</ul>
+</li>
+</ul>
+<h2 id="録画データをサーバーに保存する">
+  録画データをサーバーに保存する
+  <a class="heading-link" href="#%e9%8c%b2%e7%94%bb%e3%83%87%e3%83%bc%e3%82%bf%e3%82%92%e3%82%b5%e3%83%bc%e3%83%90%e3%83%bc%e3%81%ab%e4%bf%9d%e5%ad%98%e3%81%99%e3%82%8b">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>録画データは，<code>http://[IPアドレス]/sdcard/record/YYYYMMDD/hh/mm.mp4</code>から取得することができる．
+したがって，サーバー側で以下のようなpythonスクリプトを1分毎に実行すればよい．（私は18時から翌朝6時頃のデータが欲しいのでこのようにしている．<s>cronで管理しろと言えばそれまでだがタイムゾーン計算がめんどい．</S>）</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-main.py" data-lang="main.py"><span style="display:flex;"><span><span style="color:#f92672">from</span> datetime <span style="color:#f92672">import</span> datetime, timedelta
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> pytz <span style="color:#f92672">import</span> timezone
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> requests
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> os
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>baseURL <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;http://[IP-address]/sdcard/record/&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>now <span style="color:#f92672">=</span> datetime<span style="color:#f92672">.</span>now(timezone(<span style="color:#e6db74">&#34;Asia/Tokyo&#34;</span>))
+</span></span><span style="display:flex;"><span>target <span style="color:#f92672">=</span> now <span style="color:#f92672">+</span> timedelta(minutes<span style="color:#f92672">=-</span><span style="color:#ae81ff">2</span>)
+</span></span><span style="display:flex;"><span>date_str <span style="color:#f92672">=</span> str(target)[:<span style="color:#f92672">-</span><span style="color:#ae81ff">13</span>]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>YMD <span style="color:#f92672">=</span> date_str[<span style="color:#ae81ff">0</span>:<span style="color:#f92672">-</span><span style="color:#ae81ff">15</span>] <span style="color:#f92672">+</span> date_str[<span style="color:#ae81ff">5</span>:<span style="color:#f92672">-</span><span style="color:#ae81ff">12</span>] <span style="color:#f92672">+</span> date_str[<span style="color:#ae81ff">8</span>:<span style="color:#f92672">-</span><span style="color:#ae81ff">9</span>]
+</span></span><span style="display:flex;"><span>hh <span style="color:#f92672">=</span> date_str[<span style="color:#ae81ff">11</span>:<span style="color:#f92672">-</span><span style="color:#ae81ff">6</span>]
+</span></span><span style="display:flex;"><span>h_num <span style="color:#f92672">=</span> int(hh)
+</span></span><span style="display:flex;"><span>mm <span style="color:#f92672">=</span> date_str[<span style="color:#ae81ff">14</span>:<span style="color:#f92672">-</span><span style="color:#ae81ff">3</span>]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>dirname <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;/mnt/nas/atomcam/&#34;</span> <span style="color:#f92672">+</span> YMD <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;/&#34;</span>
+</span></span><span style="display:flex;"><span>filename <span style="color:#f92672">=</span> YMD <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;_&#34;</span> <span style="color:#f92672">+</span> hh <span style="color:#f92672">+</span> mm <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;.mp4&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>isdir(dirname) <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>):
+</span></span><span style="display:flex;"><span>    os<span style="color:#f92672">.</span>mkdir(dirname)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>URL <span style="color:#f92672">=</span> baseURL <span style="color:#f92672">+</span> YMD <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;/&#34;</span> <span style="color:#f92672">+</span> hh <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;/&#34;</span> <span style="color:#f92672">+</span> mm <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;.mp4&#34;</span>
+</span></span><span style="display:flex;"><span>print(URL)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> ((h_num <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">6</span>) <span style="color:#f92672">or</span> (h_num <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">17</span>)):
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span>:
+</span></span><span style="display:flex;"><span>        response <span style="color:#f92672">=</span> requests<span style="color:#f92672">.</span>get(URL)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">with</span> open(dirname <span style="color:#f92672">+</span> filename, <span style="color:#e6db74">&#34;wb&#34;</span>) <span style="color:#66d9ef">as</span> f:
+</span></span><span style="display:flex;"><span>            f<span style="color:#f92672">.</span>write(response<span style="color:#f92672">.</span>content)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">except</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">pass</span>
+</span></span></code></pre></div>
+  </article>
+</section>
+
+  
+
+    </div>
+
+    <footer class="footer">
+  <section class="container">
+    ©
+    
+    2025
+     JL1ANZ / Mitsuki Baba 
+    ·
+    
+    Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> & <a href="https://github.com/luizdepra/hugo-coder/" target="_blank" rel="noopener">Coder</a>.
+    
+  </section>
+</footer>
+
+  </main>
+
+  
+
+  
+  
+  <script src="/portfolio/js/coder.min.6ae284be93d2d19dad1f02b0039508d9aab3180a12a06dcc71b0b0ef7825a317.js" integrity="sha256-auKEvpPS0Z2tHwKwA5UI2aqzGAoSoG3McbCw73gloxc="></script>
+  
+
+  
+
+  
+
+
+  
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-XCRFWK1QMN"></script>
+      <script>
+        var doNotTrack = false;
+        if ( false ) {
+          var dnt = (navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack);
+          var doNotTrack = (dnt == "1" || dnt == "yes");
+        }
+        if (!doNotTrack) {
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-XCRFWK1QMN');
+        }
+      </script>
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</body>
+</html>
