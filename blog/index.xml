@@ -6,8 +6,22 @@
     <description>Recent content in Blog on JL1ANZ&#39;s page</description>
     <generator>Hugo</generator>
     <language>ja-jp</language>
-    <lastBuildDate>Sun, 20 Jul 2025 05:03:31 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 02 Jan 2026 14:19:47 +0000</lastBuildDate>
     <atom:link href="https://grapetamc.github.io/portfolio/blog/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Map Test</title>
+      <link>https://grapetamc.github.io/portfolio/blog/map-test/</link>
+      <pubDate>Fri, 02 Jan 2026 14:19:47 +0000</pubDate>
+      <guid>https://grapetamc.github.io/portfolio/blog/map-test/</guid>
+      <description>&lt;hr&gt;&#xA;&lt;h2 id=&#34;東京大阪&#34;&gt;&#xA;  東京→大阪&#xA;  &lt;a class=&#34;heading-link&#34; href=&#34;#%e6%9d%b1%e4%ba%ac%e5%a4%a7%e9%98%aa&#34;&gt;&#xA;    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;&#xA;    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;&#xA;  &lt;/a&gt;&#xA;&lt;/h2&gt;&#xA;&lt;iframe style=&#34;width: 100%; height: 300px; border: 0;&#34; allowfullscreen allow=&#34;geolocation&#34; src=&#34;//umap.openstreetmap.fr/ja/map/20251127_1324673?scaleControl=false&amp;miniMap=false&amp;scrollWheelZoom=false&amp;zoomControl=true&amp;editMode=disabled&amp;moreControl=true&amp;searchControl=null&amp;tilelayersControl=null&amp;embedControl=null&amp;datalayersControl=true&amp;onLoadPanel=none&amp;captionBar=false&amp;captionMenus=true&#34;&gt;&lt;/iframe&gt;&#xA;&lt;div class=&#34;iframe-container&#34;&gt;&#xA;  &lt;iframe &#xA;    src=&#34;https://umap.openstreetmap.fr/ja/map/20251127_1324673?scaleControl=false&amp;amp;miniMap=false&amp;amp;scrollWheelZoom=false&amp;amp;zoomControl=true&amp;amp;editMode=disabled&amp;amp;moreControl=true&amp;amp;searchControl=null&amp;amp;tilelayersControl=null&amp;amp;embedControl=null&amp;amp;datalayersControl=true&amp;amp;onLoadPanel=none&amp;amp;captionBar=false&amp;amp;captionMenus=true&#34; &#xA;    width=&#34;100%&#34; &#xA;    height=&#34;500px&#34; &#xA;    style=&#34;border:0;&#34; &#xA;    allowfullscreen=&#34;&#34; &#xA;    loading=&#34;lazy&#34;&gt;&#xA;  &lt;/iframe&gt;&#xA;&lt;/div&gt;</description>
+    </item>
+    <item>
+      <title>Switchbot温湿度計を活用する</title>
+      <link>https://grapetamc.github.io/portfolio/blog/switchbot/</link>
+      <pubDate>Thu, 24 Jul 2025 07:22:47 +0000</pubDate>
+      <guid>https://grapetamc.github.io/portfolio/blog/switchbot/</guid>
+      <description>&lt;hr&gt;&#xA;&lt;p&gt;Switchbotが発売している温湿度計を用いて自宅の温度・湿度を観測している．&lt;/p&gt;&#xA;&lt;p&gt;|/|/|/| underconstruction&amp;hellip; |/|/|/|&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Atomcamを活用する</title>
       <link>https://grapetamc.github.io/portfolio/blog/atomcam/</link>
@@ -27,7 +41,7 @@
       <link>https://grapetamc.github.io/portfolio/blog/cited/</link>
       <pubDate>Thu, 03 Jul 2025 15:46:21 +0000</pubDate>
       <guid>https://grapetamc.github.io/portfolio/blog/cited/</guid>
-      <description>&lt;hr&gt;&#xA;&lt;p&gt;まとめも&lt;br&gt;&#xA;後輩の研究で先行研究や参考文献に自分の名前が含まれるもの&lt;/p&gt;</description>
+      <description>&lt;hr&gt;&#xA;&lt;p&gt;まとめも&lt;br&gt;&#xA;後輩の研究で先行研究や参考文献などに自分の名前が含まれるもの&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>
