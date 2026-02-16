@@ -321,7 +321,7 @@ from datetime import datetime, timedelta from pytz import timezone import reques
 </h2>
 <p>録画データは，<code>http://[IPアドレス]/sdcard/record/YYYYMMDD/hh/mm.mp4</code>から取得することができる．
 したがって，サーバー側で以下のようなpythonスクリプトを1分毎に実行すればよい．（私は18時から翌朝6時頃のデータが欲しいのでこのようにしている．<s>cronで管理しろと言えばそれまでだがタイムゾーン計算がめんどい．</S>）</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-main.py" data-lang="main.py"><span style="display:flex;"><span><span style="color:#f92672">from</span> datetime <span style="color:#f92672">import</span> datetime, timedelta
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-main.py" data-lang="main.py"><span style="display:flex;"><span><span style="color:#f92672">from</span> datetime <span style="color:#f92672">import</span> datetime, timedelta
 </span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> pytz <span style="color:#f92672">import</span> timezone
 </span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> requests
 </span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> os
@@ -394,7 +394,7 @@ from datetime import datetime, timedelta from pytz import timezone import reques
       <script async src="https://www.googletagmanager.com/gtag/js?id=G-XCRFWK1QMN"></script>
       <script>
         var doNotTrack = false;
-        if ( false ) {
+        if ( true ) {
           var dnt = (navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack);
           var doNotTrack = (dnt == "1" || dnt == "yes");
         }
